@@ -80,7 +80,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || 'resumind-ai-production-secret-key-2024-secure',
   debug: process.env.NODE_ENV === 'development',
 };
 
