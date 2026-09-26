@@ -1371,6 +1371,7 @@ export default function ResumeEditorPage() {
                   activeSection={activeHighlightSection}
                   id="resume-preview"
                   onDownloadClick={handleDownloadPDF}
+                   isPro={isPro}
                 />
               </div>
 

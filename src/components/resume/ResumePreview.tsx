@@ -70,6 +70,7 @@ export default function ResumePreview({
           {!isPro && (
             <div
               aria-hidden="true"
+              className="preview-watermark"
               style={{
                 position: 'absolute',
                 inset: 0,
