@@ -1,238 +1,164 @@
-'use client';
+import type { ResumeData } from '@/types/resume';
+import { formatDate } from '@/lib/utils';
 
-import { ResumeData } from '@/types/resume';
-
-interface TemplateProps {
+interface Props {
   data: ResumeData;
   activeSection?: string;
 }
 
-export default function ClassicTemplate({ data, activeSection }: TemplateProps) {
-  const { personalInfo: pi, workExperience, education, skills, projects, certifications } = data;
-
-  const hasName = Boolean(pi.name?.trim());
-  const hasContact = Boolean(pi.email || pi.phone || pi.location || pi.linkedin || pi.github || pi.website);
-  const hasSummary = Boolean(pi.summary?.trim());
-  const hasExp = workExperience.length > 0;
-  const hasEdu = education.length > 0;
-  const hasSkills = skills.length > 0 && skills.some(s => s.items.length > 0);
-  const hasProjects = projects.length > 0;
-  const hasCerts = certifications.length > 0;
+export default function ClassicTemplate({ data, activeSection }: Props) {
+  const { personalInfo, workExperience, education, skills, projects, certifications } = data;
 
   return (
     <div
       style={{
-        fontFamily: 'Georgia, Cambria, "Times New Roman", Times, serif',
-        fontSize: '13px',
-        lineHeight: '1.65',
-        color: '#18181b',
-        backgroundColor: '#ffffff',
         width: '794px',
         minHeight: '1123px',
-        margin: '0 auto',
-        padding: '56px 60px',
+        padding: '40px 48px',
+        background: '#fff',
+        color: '#111',
+        fontFamily: 'Georgia, "Times New Roman", serif',
         boxSizing: 'border-box',
       }}
     >
-      {/* Centered Editorial Serif Header */}
-      <header
+      {/* Header */}
+      <div
         style={{
           textAlign: 'center',
-          marginBottom: '26px',
-          borderBottom: '1px solid #18181b',
-          paddingBottom: '22px',
-          outline: activeSection === 'header' ? '1px solid #2F5D3A' : 'none',
-          backgroundColor: activeSection === 'header' ? 'rgba(47, 93, 58, 0.08)' : 'transparent',
-          outlineOffset: '6px',
+          marginBottom: '20px',
+          outline: activeSection === 'header' ? '2px solid #111' : 'none',
+          padding: '8px',
           borderRadius: '4px',
-          transition: 'all 0.15s ease',
         }}
       >
-        <h1
-          style={{
-            fontSize: '32px',
-            fontWeight: '700',
-            letterSpacing: '0.04em',
-            margin: '0 0 8px 0',
-            textTransform: 'uppercase',
-            color: hasName ? '#09090b' : '#a1a1aa',
-          }}
-        >
-          {hasName ? pi.name : 'Jane Eleanor Vance'}
+        <h1 style={{ fontSize: '26px', fontWeight: 700, letterSpacing: '0.03em', margin: '0 0 8px 0', textTransform: 'uppercase' }}>
+          {personalInfo.name || 'Your Name'}
         </h1>
-
-        <div
-          style={{
-            fontSize: '12.5px',
-            color: hasContact ? '#3f3f46' : '#a1a1aa',
-            display: 'flex',
-            justifyContent: 'center',
-            flexWrap: 'wrap',
-            gap: '14px',
-            fontVariantNumeric: 'tabular-nums',
-          }}
-        >
-          {pi.email ? <span>{pi.email}</span> : !hasContact && <span>j.vance@law.columbia.edu</span>}
-          {pi.phone && <span>· {pi.phone}</span>}
-          {pi.location && <span>· {pi.location}</span>}
-          {pi.linkedin && <span>· {pi.linkedin}</span>}
-          {pi.github && <span>· {pi.github}</span>}
-          {pi.website && <span>· {pi.website}</span>}
+        <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '12px', fontSize: '13px', color: '#444' }}>
+          {personalInfo.email && <span>{personalInfo.email}</span>}
+          {personalInfo.phone && <span>|</span>}
+          {personalInfo.phone && <span>{personalInfo.phone}</span>}
+          {personalInfo.location && <span>|</span>}
+          {personalInfo.location && <span>{personalInfo.location}</span>}
+          {personalInfo.linkedin && <span>|</span>}
+          {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
+          {personalInfo.github && <span>|</span>}
+          {personalInfo.github && <span>{personalInfo.github}</span>}
         </div>
-      </header>
+      </div>
+
+      <hr style={{ border: 'none', borderTop: '2px solid #111', margin: '0 0 20px 0' }} />
 
       {/* Summary */}
-      {(hasSummary || (!hasExp && !hasEdu)) && (
-        <Section title="SUMMARY OF QUALIFICATIONS" isHighlighted={activeSection === 'summary'}>
-          <p
-            style={{
-              margin: 0,
-              fontSize: '13px',
-              lineHeight: '1.7',
-              color: hasSummary ? '#27272a' : '#a1a1aa',
-              fontStyle: hasSummary ? 'normal' : 'italic',
-            }}
-          >
-            {hasSummary
-              ? pi.summary
-              : 'Accomplished legal counselor and corporate governance advisor with ten years of cross-border arbitration experience. Proven record in risk management, international dispute resolution, and contractual negotiations across financial and technological sectors.'}
+      {personalInfo.summary && (
+        <ClassicSection title="Professional Summary" isHighlighted={activeSection === 'summary'}>
+          <p style={{ fontSize: '13px', lineHeight: '1.7', color: '#333', margin: 0 }}>
+            {personalInfo.summary}
           </p>
-        </Section>
+        </ClassicSection>
       )}
 
       {/* Experience */}
-      {(hasExp || !hasEdu) && (
-        <Section title="PROFESSIONAL EXPERIENCE" isHighlighted={activeSection === 'experience'}>
-          {hasExp ? (
-            workExperience.map((exp) => (
-              <div key={exp.id} style={{ marginBottom: '22px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
-                  <div>
-                    <span style={{ fontWeight: '700', fontSize: '14.5px', color: '#09090b' }}>{exp.title || 'Role Title'}</span>
-                    <span style={{ fontStyle: 'italic', color: '#3f3f46', fontSize: '13.5px', marginLeft: '6px' }}>
-                      , {exp.company || 'Institution'}
-                    </span>
-                    {exp.location && <span style={{ color: '#52525b', fontSize: '13px' }}> — {exp.location}</span>}
-                  </div>
-                  <span style={{ color: '#52525b', fontStyle: 'italic', fontSize: '12.5px', fontVariantNumeric: 'tabular-nums' }}>
-                    {exp.startDate || '2020'} — {exp.current ? 'Present' : exp.endDate || '2023'}
+      {workExperience.length > 0 && (
+        <ClassicSection title="Work Experience" isHighlighted={activeSection === 'experience'}>
+          {workExperience.map((exp) => (
+            <div key={exp.id} style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <div>
+                  <span style={{ fontWeight: 700, fontSize: '14px' }}>{exp.title}</span>
+                  <span style={{ fontStyle: 'italic', color: '#444', fontSize: '13px' }}>
+                    {' '}— {exp.company}{exp.location ? `, ${exp.location}` : ''}
                   </span>
                 </div>
-                {exp.bullets.filter(Boolean).length > 0 && (
-                  <ul style={{ margin: '8px 0 0 22px', padding: 0 }}>
-                    {exp.bullets.filter(Boolean).map((bullet, i) => (
-                      <li key={i} style={{ marginBottom: '5px', color: '#27272a', fontSize: '13px', lineHeight: '1.65' }}>
-                        {bullet}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))
-          ) : (
-            <div style={{ marginBottom: '16px', color: '#a1a1aa', fontStyle: 'italic' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span>
-                  <strong style={{ fontStyle: 'normal' }}>Senior Counsel, International Trade</strong>, Sterling &amp; Partners — Geneva
+                <span style={{ fontSize: '12px', color: '#666', whiteSpace: 'nowrap' }}>
+                  {formatDate(exp.startDate)} – {exp.current ? 'Present' : formatDate(exp.endDate)}
                 </span>
-                <span>2020 — Present</span>
               </div>
-              <ul style={{ margin: '6px 0 0 20px', padding: 0 }}>
-                <li>Advised Fortune 100 enterprise clients on multilateral trade regulations and treaty compliances.</li>
-                <li>Negotiated commercial settlement terms exceeding $140M in aggregate dispute value.</li>
-              </ul>
+              {exp.bullets.length > 0 && (
+                <ul style={{ margin: '6px 0 0 0', paddingLeft: '20px' }}>
+                  {exp.bullets.map((bullet, i) => (
+                    <li key={i} style={{ fontSize: '13px', color: '#333', lineHeight: '1.6', marginBottom: '3px' }}>
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          )}
-        </Section>
+          ))}
+        </ClassicSection>
       )}
 
       {/* Education */}
-      {(hasEdu || !hasExp) && (
-        <Section title="EDUCATION" isHighlighted={activeSection === 'education'}>
-          {hasEdu ? (
-            education.map((edu) => (
-              <div key={edu.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', alignItems: 'baseline' }}>
-                <div>
-                  <span style={{ fontWeight: '700', fontSize: '14px', color: '#09090b' }}>{edu.degree || 'Degree'}</span>
-                  <span style={{ fontStyle: 'italic', color: '#3f3f46', marginLeft: '6px', fontSize: '13.5px' }}>
-                    , {edu.school || 'University'}
-                  </span>
-                  {edu.location && <span style={{ color: '#52525b', fontSize: '13px' }}> ({edu.location})</span>}
-                  {edu.gpa && <span style={{ color: '#71717a', fontSize: '12.5px' }}> [GPA: {edu.gpa}]</span>}
-                </div>
-                <span style={{ color: '#52525b', fontStyle: 'italic', fontSize: '12.5px', fontVariantNumeric: 'tabular-nums' }}>
-                  {edu.graduationDate || '2019'}
-                </span>
-              </div>
-            ))
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#a1a1aa', fontStyle: 'italic' }}>
+      {education.length > 0 && (
+        <ClassicSection title="Education" isHighlighted={activeSection === 'education'}>
+          {education.map((edu) => (
+            <div key={edu.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
               <div>
-                <strong style={{ fontStyle: 'normal' }}>Juris Doctor (J.D.), Magna Cum Laude</strong>, Columbia Law School
+                <span style={{ fontWeight: 700, fontSize: '14px' }}>{edu.degree}</span>
+                <span style={{ fontStyle: 'italic', color: '#444', fontSize: '13px' }}>
+                  {' '}— {edu.school}{edu.location ? `, ${edu.location}` : ''}
+                </span>
+                {edu.gpa && <span style={{ fontSize: '12px', color: '#666' }}> · GPA: {edu.gpa}</span>}
               </div>
-              <span>2019</span>
+              <span style={{ fontSize: '12px', color: '#666', whiteSpace: 'nowrap' }}>
+                {formatDate(edu.graduationDate)}
+              </span>
             </div>
-          )}
-        </Section>
+          ))}
+        </ClassicSection>
       )}
 
       {/* Skills */}
-      {(hasSkills || (!hasExp && !hasEdu)) && (
-        <Section title="AREAS OF EXPERTISE" isHighlighted={activeSection === 'skills'}>
-          {hasSkills ? (
-            skills.map((group, i) => (
-              <div key={i} style={{ marginBottom: '6px', fontSize: '13px', color: '#27272a' }}>
-                <span style={{ fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em', fontSize: '12px' }}>
-                  {group.category}:{' '}
-                </span>
-                <span>{group.items.join(', ')}</span>
-              </div>
-            ))
-          ) : (
-            <div style={{ color: '#a1a1aa', fontStyle: 'italic' }}>
-              <span>Cross-Border Compliance, Corporate Governance, Bilateral Treaties, Financial Risk Audit, Contractual Drafting</span>
+      {skills.some((g) => g.items.length > 0) && (
+        <ClassicSection title="Skills" isHighlighted={activeSection === 'skills'}>
+          {skills.filter((g) => g.items.length > 0).map((group) => (
+            <div key={group.category} style={{ marginBottom: '6px', fontSize: '13px' }}>
+              <span style={{ fontWeight: 700 }}>{group.category}: </span>
+              <span style={{ color: '#333' }}>{group.items.join(', ')}</span>
             </div>
-          )}
-        </Section>
+          ))}
+        </ClassicSection>
       )}
 
       {/* Projects */}
-      {hasProjects && (
-        <Section title="PUBLICATIONS &amp; PROJECTS" isHighlighted={activeSection === 'additional'}>
+      {projects.length > 0 && (
+        <ClassicSection title="Projects" isHighlighted={activeSection === 'projects'}>
           {projects.map((proj) => (
-            <div key={proj.id} style={{ marginBottom: '14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontWeight: '700', fontSize: '14px', color: '#09090b' }}>{proj.name}</span>
-                {proj.url && <span style={{ color: '#52525b', fontStyle: 'italic', fontSize: '12.5px' }}>{proj.url}</span>}
+            <div key={proj.id} style={{ marginBottom: '12px' }}>
+              <div style={{ fontWeight: 700, fontSize: '13px' }}>
+                {proj.name}
+                {proj.url && <span style={{ fontWeight: 400, fontStyle: 'italic', color: '#555', fontSize: '12px' }}> — {proj.url}</span>}
               </div>
+              <p style={{ fontSize: '13px', color: '#333', margin: '3px 0', lineHeight: '1.6' }}>{proj.description}</p>
               {proj.technologies.length > 0 && (
-                <span style={{ color: '#71717a', fontStyle: 'italic', fontSize: '12.5px' }}>{proj.technologies.join(', ')}</span>
+                <div style={{ fontSize: '12px', color: '#555' }}>
+                  <span style={{ fontWeight: 600 }}>Technologies: </span>
+                  {proj.technologies.join(', ')}
+                </div>
               )}
-              {proj.description && <p style={{ margin: '4px 0 0 0', fontSize: '13px', lineHeight: '1.65', color: '#27272a' }}>{proj.description}</p>}
             </div>
           ))}
-        </Section>
+        </ClassicSection>
       )}
 
       {/* Certifications */}
-      {hasCerts && (
-        <Section title="CERTIFICATIONS &amp; LICENSES" isHighlighted={activeSection === 'additional'}>
+      {certifications.length > 0 && (
+        <ClassicSection title="Certifications" isHighlighted={activeSection === 'certifications'}>
           {certifications.map((cert) => (
-            <div key={cert.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', alignItems: 'baseline' }}>
-              <span style={{ fontSize: '13px', color: '#27272a' }}>
-                <span style={{ fontWeight: '700' }}>{cert.name}</span>
-                {cert.issuer && <span style={{ fontStyle: 'italic', color: '#52525b' }}> — {cert.issuer}</span>}
+            <div key={cert.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '13px' }}>
+              <span>
+                <span style={{ fontWeight: 600 }}>{cert.name}</span> — {cert.issuer}
               </span>
-              <span style={{ color: '#52525b', fontStyle: 'italic', fontSize: '12.5px' }}>{cert.date}</span>
+              <span style={{ color: '#666', fontSize: '12px' }}>{formatDate(cert.date)}</span>
             </div>
           ))}
-        </Section>
+        </ClassicSection>
       )}
     </div>
   );
 }
 
-function Section({
+function ClassicSection({
   title,
   children,
   isHighlighted,
@@ -242,31 +168,30 @@ function Section({
   isHighlighted?: boolean;
 }) {
   return (
-    <section
+    <div
       style={{
-        marginBottom: '24px',
-        border: isHighlighted ? '1px solid #2F5D3A' : '1px solid transparent',
+        marginBottom: '20px',
+        padding: isHighlighted ? '8px' : '0',
+        backgroundColor: isHighlighted ? 'rgba(0, 0, 0, 0.03)' : 'transparent',
         borderRadius: '4px',
-        padding: isHighlighted ? '8px 10px' : '0',
-        backgroundColor: isHighlighted ? 'rgba(47, 93, 58, 0.08)' : 'transparent',
-        transition: 'all 0.15s ease',
       }}
     >
       <h2
         style={{
-          fontSize: '12.5px',
-          fontWeight: '700',
-          letterSpacing: '0.08em',
-          color: '#18181b',
-          borderBottom: '1px solid #d4d4d8',
+          fontSize: '14px',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          color: '#111',
+          borderBottom: '1px solid #111',
           paddingBottom: '4px',
           marginBottom: '10px',
-          margin: '0 0 10px 0',
+          fontFamily: 'Georgia, serif',
         }}
       >
         {title}
       </h2>
       {children}
-    </section>
+    </div>
   );
 }

@@ -1,253 +1,196 @@
-'use client';
+import type { ResumeData } from '@/types/resume';
+import { formatDate } from '@/lib/utils';
 
-import { ResumeData } from '@/types/resume';
-
-interface TemplateProps {
+interface Props {
   data: ResumeData;
   activeSection?: string;
 }
 
-export default function ModernTemplate({ data, activeSection }: TemplateProps) {
-  const { personalInfo: pi, workExperience, education, skills, projects, certifications } = data;
-
-  const hasName = Boolean(pi.name?.trim());
-  const hasContact = Boolean(pi.email || pi.phone || pi.location || pi.linkedin || pi.github || pi.website);
-  const hasSummary = Boolean(pi.summary?.trim());
-  const hasExp = workExperience.length > 0;
-  const hasEdu = education.length > 0;
-  const hasSkills = skills.length > 0 && skills.some(s => s.items.length > 0);
-  const hasProjects = projects.length > 0;
-  const hasCerts = certifications.length > 0;
+export default function ModernTemplate({ data, activeSection }: Props) {
+  const { personalInfo, workExperience, education, skills, projects, certifications } = data;
 
   return (
     <div
-      style={{
-        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        fontSize: '13px',
-        lineHeight: '1.6',
-        color: '#18181b',
-        backgroundColor: '#ffffff',
-        width: '794px',
-        minHeight: '1123px',
-        margin: '0 auto',
-        padding: '52px 56px',
-        boxSizing: 'border-box',
-      }}
+      className="bg-white text-slate-900 font-sans"
+      style={{ width: '794px', minHeight: '1123px', padding: 0, boxSizing: 'border-box' }}
     >
-      {/* Editorial Header */}
-      <header
+      {/* Header */}
+      <div
         style={{
-          borderBottom: '2px solid #18181b',
-          paddingBottom: '20px',
-          marginBottom: '28px',
-          outline: activeSection === 'header' ? '1px solid #2F5D3A' : 'none',
-          backgroundColor: activeSection === 'header' ? 'rgba(47, 93, 58, 0.08)' : 'transparent',
-          outlineOffset: '6px',
-          borderRadius: '4px',
-          transition: 'all 0.15s ease',
+          background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+          padding: '32px 40px',
+          outline: activeSection === 'header' ? '2px solid #2563EB' : 'none',
+          outlineOffset: '2px',
         }}
       >
-        <h1
-          style={{
-            fontSize: '32px',
-            fontWeight: '800',
-            letterSpacing: '-0.025em',
-            margin: '0 0 6px 0',
-            color: hasName ? '#09090b' : '#a1a1aa',
-            textTransform: 'uppercase',
-          }}
-        >
-          {hasName ? pi.name : 'Candidate Full Name'}
+        <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#fff', margin: 0 }}>
+          {personalInfo.name || 'Your Name'}
         </h1>
-
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '12px 18px',
-            fontSize: '12.5px',
-            color: hasContact ? '#52525b' : '#a1a1aa',
-            marginTop: '10px',
-            fontVariantNumeric: 'tabular-nums',
-          }}
-        >
-          {pi.email ? <span>{pi.email}</span> : !hasContact && <span>candidate@domain.com</span>}
-          {pi.phone && <span>· {pi.phone}</span>}
-          {pi.location && <span>· {pi.location}</span>}
-          {pi.linkedin && <span>· {pi.linkedin}</span>}
-          {pi.github && <span>· {pi.github}</span>}
-          {pi.website && <span>· {pi.website}</span>}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '10px' }}>
+          {personalInfo.email && (
+            <span style={{ color: '#dbeafe', fontSize: '13px' }}>✉ {personalInfo.email}</span>
+          )}
+          {personalInfo.phone && (
+            <span style={{ color: '#dbeafe', fontSize: '13px' }}>📱 {personalInfo.phone}</span>
+          )}
+          {personalInfo.location && (
+            <span style={{ color: '#dbeafe', fontSize: '13px' }}>📍 {personalInfo.location}</span>
+          )}
+          {personalInfo.linkedin && (
+            <span style={{ color: '#dbeafe', fontSize: '13px' }}>🔗 {personalInfo.linkedin}</span>
+          )}
+          {personalInfo.github && (
+            <span style={{ color: '#dbeafe', fontSize: '13px' }}>💻 {personalInfo.github}</span>
+          )}
+          {personalInfo.website && (
+            <span style={{ color: '#dbeafe', fontSize: '13px' }}>🌐 {personalInfo.website}</span>
+          )}
         </div>
-      </header>
+      </div>
 
-      {/* Summary */}
-      {(hasSummary || (!hasExp && !hasEdu)) && (
-        <Section title="Executive Profile" isHighlighted={activeSection === 'summary'}>
-          <p
-            style={{
-              margin: 0,
-              color: hasSummary ? '#3f3f46' : '#a1a1aa',
-              fontSize: '13px',
-              lineHeight: '1.65',
-              fontStyle: hasSummary ? 'normal' : 'italic',
-            }}
-          >
-            {hasSummary
-              ? pi.summary
-              : 'Senior executive with a track record of driving cross-functional alignment, scaling critical operations, and translating ambitious strategic visions into measurable market outcomes.'}
-          </p>
-        </Section>
-      )}
+      {/* Body */}
+      <div style={{ padding: '28px 40px' }}>
+        {/* Summary */}
+        {personalInfo.summary && (
+          <Section title="Summary" isHighlighted={activeSection === 'summary'}>
+            <p style={{ fontSize: '13px', lineHeight: '1.7', color: '#475569', margin: 0 }}>
+              {personalInfo.summary}
+            </p>
+          </Section>
+        )}
 
-      {/* Work Experience */}
-      {(hasExp || !hasEdu) && (
-        <Section title="Professional Experience" isHighlighted={activeSection === 'experience'}>
-          {hasExp ? (
-            workExperience.map((exp) => (
-              <div key={exp.id} style={{ marginBottom: '22px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
+        {/* Experience */}
+        {workExperience.length > 0 && (
+          <Section title="Work Experience" isHighlighted={activeSection === 'experience'}>
+            {workExperience.map((exp) => (
+              <div key={exp.id} style={{ marginBottom: '18px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <span style={{ fontWeight: '700', fontSize: '14.5px', color: '#09090b', letterSpacing: '-0.01em' }}>
-                      {exp.title || 'Role / Title'}
-                    </span>
-                    <span style={{ color: '#52525b', fontWeight: '500', marginLeft: '8px', fontSize: '13.5px' }}>
-                      — {exp.company || 'Organization'}{exp.location ? `, ${exp.location}` : ''}
-                    </span>
+                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#0F172A' }}>{exp.title}</div>
+                    <div style={{ fontSize: '13px', color: '#2563EB', fontWeight: 600 }}>
+                      {exp.company}{exp.location ? ` · ${exp.location}` : ''}
+                    </div>
                   </div>
-                  <span style={{ color: '#71717a', fontSize: '12px', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.02em' }}>
-                    {exp.startDate || '2021'} — {exp.current ? 'Present' : exp.endDate || '2024'}
-                  </span>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                    {formatDate(exp.startDate)} – {exp.current ? 'Present' : formatDate(exp.endDate)}
+                  </div>
                 </div>
-                {exp.bullets.filter(Boolean).length > 0 && (
-                  <ul style={{ margin: '8px 0 0 20px', padding: 0 }}>
-                    {exp.bullets.filter(Boolean).map((bullet, i) => (
-                      <li key={i} style={{ marginBottom: '5px', color: '#3f3f46', fontSize: '13px', lineHeight: '1.6' }}>
+                {exp.bullets.length > 0 && (
+                  <ul style={{ margin: '8px 0 0 0', paddingLeft: '18px' }}>
+                    {exp.bullets.map((bullet, i) => (
+                      <li key={i} style={{ fontSize: '13px', color: '#475569', lineHeight: '1.6', marginBottom: '4px' }}>
                         {bullet}
                       </li>
                     ))}
                   </ul>
                 )}
               </div>
-            ))
-          ) : (
-            <div style={{ marginBottom: '16px', color: '#a1a1aa', fontStyle: 'italic' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontWeight: '600' }}>Senior Director of Product Engineering — Acme Global</span>
-                <span style={{ fontSize: '12px' }}>2021 — Present</span>
-              </div>
-              <ul style={{ margin: '6px 0 0 18px', padding: 0 }}>
-                <li>Led 42-engineer platform organization delivering high-availability infrastructure supporting 10M+ daily active sessions.</li>
-                <li>Architected real-time streaming pipeline reducing data ingestion latency by 45%.</li>
-              </ul>
-            </div>
-          )}
-        </Section>
-      )}
+            ))}
+          </Section>
+        )}
 
-      {/* Education */}
-      {(hasEdu || !hasExp) && (
-        <Section title="Education & Credentials" isHighlighted={activeSection === 'education'}>
-          {hasEdu ? (
-            education.map((edu) => (
-              <div key={edu.id} style={{ marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        {/* Education */}
+        {education.length > 0 && (
+          <Section title="Education" isHighlighted={activeSection === 'education'}>
+            {education.map((edu) => (
+              <div key={edu.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <div>
-                  <span style={{ fontWeight: '700', fontSize: '14px', color: '#09090b' }}>{edu.degree || 'Degree Program'}</span>
-                  <span style={{ color: '#52525b', marginLeft: '8px', fontSize: '13.5px' }}>
-                    — {edu.school || 'Institution'}{edu.location ? `, ${edu.location}` : ''}
-                  </span>
-                  {edu.gpa && <span style={{ color: '#71717a', marginLeft: '6px', fontSize: '12.5px' }}>(GPA: {edu.gpa})</span>}
+                  <div style={{ fontWeight: 700, fontSize: '14px' }}>{edu.degree}</div>
+                  <div style={{ fontSize: '13px', color: '#2563EB', fontWeight: 600 }}>
+                    {edu.school}{edu.location ? ` · ${edu.location}` : ''}
+                  </div>
+                  {edu.gpa && <div style={{ fontSize: '12px', color: '#64748b' }}>GPA: {edu.gpa}</div>}
                 </div>
-                <span style={{ color: '#71717a', fontSize: '12px', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
-                  {edu.graduationDate || '2020'}
-                </span>
+                <div style={{ fontSize: '12px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                  {formatDate(edu.graduationDate)}
+                </div>
               </div>
-            ))
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#a1a1aa', fontStyle: 'italic' }}>
-              <div>
-                <span style={{ fontWeight: '600' }}>B.S. in Computer Science & Applied Mathematics</span>
-                <span> — University of California, Berkeley</span>
-              </div>
-              <span style={{ fontSize: '12px' }}>2018 — 2022</span>
-            </div>
-          )}
-        </Section>
-      )}
+            ))}
+          </Section>
+        )}
 
-      {/* Skills */}
-      {(hasSkills || (!hasExp && !hasEdu)) && (
-        <Section title="Core Competencies" isHighlighted={activeSection === 'skills'}>
-          {hasSkills ? (
-            skills.filter(s => s.items.length > 0).map((group, i) => (
-              <div key={i} style={{ marginBottom: '10px', display: 'flex', gap: '12px', alignItems: 'baseline' }}>
-                <span style={{ fontWeight: '700', color: '#18181b', minWidth: '140px', fontSize: '12.5px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  {group.category}:
+        {/* Skills */}
+        {skills.some((g) => g.items.length > 0) && (
+          <Section title="Skills" isHighlighted={activeSection === 'skills'}>
+            {skills.filter((g) => g.items.length > 0).map((group) => (
+              <div key={group.category} style={{ marginBottom: '10px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {group.category}:&nbsp;
                 </span>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {group.items.map((item, j) => (
+                <span style={{ display: 'inline-flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {group.items.map((item) => (
                     <span
-                      key={j}
+                      key={item}
                       style={{
-                        backgroundColor: '#f4f4f5',
-                        color: '#18181b',
-                        border: '1px solid #e4e4e7',
-                        padding: '2.5px 8px',
-                        borderRadius: '3px',
+                        background: '#EFF6FF',
+                        color: '#2563EB',
+                        borderRadius: '999px',
+                        padding: '2px 10px',
                         fontSize: '12px',
-                        fontWeight: '500',
+                        fontWeight: 500,
                       }}
                     >
                       {item}
                     </span>
                   ))}
+                </span>
+              </div>
+            ))}
+          </Section>
+        )}
+
+        {/* Projects */}
+        {projects.length > 0 && (
+          <Section title="Projects" isHighlighted={activeSection === 'projects'}>
+            {projects.map((proj) => (
+              <div key={proj.id} style={{ marginBottom: '14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontWeight: 700, fontSize: '14px' }}>{proj.name}</span>
+                  {proj.url && (
+                    <span style={{ fontSize: '12px', color: '#2563EB' }}>{proj.url}</span>
+                  )}
                 </div>
-              </div>
-            ))
-          ) : (
-            <div style={{ display: 'flex', gap: '8px', color: '#a1a1aa' }}>
-              <span style={{ padding: '2px 8px', background: '#f4f4f5', borderRadius: '3px', fontSize: '12px' }}>Distributed Systems</span>
-              <span style={{ padding: '2px 8px', background: '#f4f4f5', borderRadius: '3px', fontSize: '12px' }}>Cloud Architecture</span>
-              <span style={{ padding: '2px 8px', background: '#f4f4f5', borderRadius: '3px', fontSize: '12px' }}>Executive Leadership</span>
-              <span style={{ padding: '2px 8px', background: '#f4f4f5', borderRadius: '3px', fontSize: '12px' }}>TypeScript / Node.js</span>
-            </div>
-          )}
-        </Section>
-      )}
-
-      {/* Projects */}
-      {hasProjects && (
-        <Section title="Selected Projects" isHighlighted={activeSection === 'additional'}>
-          {projects.map((proj) => (
-            <div key={proj.id} style={{ marginBottom: '14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontWeight: '700', fontSize: '14px', color: '#09090b' }}>{proj.name}</span>
-                {proj.url && <span style={{ color: '#71717a', fontSize: '12px' }}>{proj.url}</span>}
-              </div>
-              {proj.technologies.length > 0 && (
-                <p style={{ color: '#71717a', margin: '3px 0', fontSize: '12px' }}>
-                  {proj.technologies.join(' · ')}
+                <p style={{ fontSize: '13px', color: '#475569', margin: '4px 0', lineHeight: '1.6' }}>
+                  {proj.description}
                 </p>
-              )}
-              {proj.description && <p style={{ color: '#3f3f46', margin: '4px 0 0 0', fontSize: '13px', lineHeight: '1.55' }}>{proj.description}</p>}
-            </div>
-          ))}
-        </Section>
-      )}
-
-      {/* Certifications */}
-      {hasCerts && (
-        <Section title="Certifications" isHighlighted={activeSection === 'additional'}>
-          {certifications.map((cert) => (
-            <div key={cert.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'baseline' }}>
-              <div>
-                <span style={{ fontWeight: '600', fontSize: '13.5px' }}>{cert.name}</span>
-                {cert.issuer && <span style={{ color: '#71717a', fontSize: '13px' }}> — {cert.issuer}</span>}
+                {proj.technologies.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {proj.technologies.map((tech) => (
+                      <span
+                        key={tech}
+                        style={{
+                          background: '#F1F5F9',
+                          color: '#64748B',
+                          borderRadius: '4px',
+                          padding: '2px 8px',
+                          fontSize: '11px',
+                        }}
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-              <span style={{ color: '#71717a', fontSize: '12px', fontVariantNumeric: 'tabular-nums' }}>{cert.date}</span>
-            </div>
-          ))}
-        </Section>
-      )}
+            ))}
+          </Section>
+        )}
+
+        {/* Certifications */}
+        {certifications.length > 0 && (
+          <Section title="Certifications" isHighlighted={activeSection === 'certifications'}>
+            {certifications.map((cert) => (
+              <div key={cert.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <div>
+                  <span style={{ fontWeight: 600, fontSize: '13px' }}>{cert.name}</span>
+                  <span style={{ color: '#64748b', fontSize: '13px' }}> — {cert.issuer}</span>
+                </div>
+                <span style={{ fontSize: '12px', color: '#94a3b8' }}>{formatDate(cert.date)}</span>
+              </div>
+            ))}
+          </Section>
+        )}
+      </div>
     </div>
   );
 }
@@ -262,33 +205,22 @@ function Section({
   isHighlighted?: boolean;
 }) {
   return (
-    <section
+    <div
       style={{
-        marginBottom: '24px',
-        border: isHighlighted ? '1px solid #2F5D3A' : '1px solid transparent',
-        borderRadius: '4px',
-        padding: isHighlighted ? '8px 10px' : '0',
-        backgroundColor: isHighlighted ? 'rgba(47, 93, 58, 0.08)' : 'transparent',
-        transition: 'all 0.15s ease',
+        marginBottom: '22px',
+        borderRadius: '6px',
+        padding: isHighlighted ? '8px' : '0',
+        backgroundColor: isHighlighted ? 'rgba(37, 99, 235, 0.05)' : 'transparent',
+        transition: 'background-color 0.15s ease',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '12px' }}>
-        <h2
-          style={{
-            fontSize: '12px',
-            fontWeight: '800',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            color: '#18181b',
-            margin: 0,
-            whiteSpace: 'nowrap',
-          }}
-        >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+        <h2 style={{ fontSize: '14px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2563EB', margin: 0 }}>
           {title}
         </h2>
-        <div style={{ flex: 1, height: '1px', backgroundColor: '#e4e4e7' }} />
+        <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to right, #2563EB, #7C3AED)', borderRadius: '999px' }} />
       </div>
       {children}
-    </section>
+    </div>
   );
 }

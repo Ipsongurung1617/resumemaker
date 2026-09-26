@@ -1,172 +1,71 @@
-'use client';
+import type { ResumeData } from '@/types/resume';
+import { formatDate } from '@/lib/utils';
 
-import { ResumeData } from '@/types/resume';
-
-interface TemplateProps {
+interface Props {
   data: ResumeData;
   activeSection?: string;
 }
 
-export default function MinimalTemplate({ data, activeSection }: TemplateProps) {
-  const { personalInfo: pi, workExperience, education, skills, projects, certifications } = data;
-
-  const hasName = Boolean(pi.name?.trim());
-  const hasContact = Boolean(pi.email || pi.phone || pi.location || pi.linkedin || pi.github || pi.website);
-  const hasSummary = Boolean(pi.summary?.trim());
-  const hasExp = workExperience.length > 0;
-  const hasEdu = education.length > 0;
-  const hasSkills = skills.length > 0 && skills.some(s => s.items.length > 0);
-  const hasProjects = projects.length > 0;
-  const hasCerts = certifications.length > 0;
+export default function MinimalTemplate({ data, activeSection }: Props) {
+  const { personalInfo, workExperience, education, skills, projects, certifications } = data;
 
   return (
     <div
       style={{
-        fontFamily: '"SF Mono", "JetBrains Mono", Consolas, "Liberation Mono", Menlo, Courier, monospace',
-        fontSize: '12px',
-        lineHeight: '1.6',
-        color: '#18181b',
-        backgroundColor: '#ffffff',
         width: '794px',
         minHeight: '1123px',
-        margin: '0 auto',
-        padding: '52px 56px',
+        display: 'flex',
+        background: '#fff',
+        fontFamily: 'system-ui, sans-serif',
         boxSizing: 'border-box',
       }}
     >
-      {/* Tech Mono Terminal Header */}
-      <header
+      {/* Left Sidebar */}
+      <div
         style={{
-          border: '1px solid #18181b',
-          padding: '24px 28px',
-          marginBottom: '28px',
-          outline: activeSection === 'header' ? '1px solid #2F5D3A' : 'none',
-          backgroundColor: activeSection === 'header' ? 'rgba(47, 93, 58, 0.08)' : '#fafafa',
-          outlineOffset: '4px',
-          borderRadius: '4px',
-          transition: 'all 0.15s ease',
+          width: '240px',
+          background: '#0F172A',
+          color: '#E2E8F0',
+          padding: '32px 20px',
+          flexShrink: 0,
+          boxSizing: 'border-box',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '8px' }}>
-          <h1
-            style={{
-              fontSize: '26px',
-              fontWeight: '800',
-              letterSpacing: '-0.03em',
-              margin: 0,
-              color: hasName ? '#09090b' : '#a1a1aa',
-            }}
-          >
-            {hasName ? pi.name : 'DEV::ALEX_CHEN'}
+        {/* Name */}
+        <div style={{ marginBottom: '24px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, color: '#FFFFFF', margin: '0 0 4px 0', lineHeight: '1.2' }}>
+            {personalInfo.name || 'Your Name'}
           </h1>
-          <span style={{ fontSize: '11px', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            STATUS: ACTIVE / ATS_VERIFIED
-          </span>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '8px 16px',
-            fontSize: '11.5px',
-            color: hasContact ? '#3f3f46' : '#a1a1aa',
-            marginTop: '14px',
-            paddingTop: '12px',
-            borderTop: '1px dashed #d4d4d8',
-          }}
-        >
-          {pi.email ? <span>[email: {pi.email}]</span> : !hasContact && <span>[email: alex@syseng.io]</span>}
-          {pi.phone && <span>[tel: {pi.phone}]</span>}
-          {pi.location && <span>[loc: {pi.location}]</span>}
-          {pi.github && <span>[gh: {pi.github}]</span>}
-          {pi.linkedin && <span>[in: {pi.linkedin}]</span>}
-          {pi.website && <span>[web: {pi.website}]</span>}
-        </div>
-      </header>
+        {/* Contact */}
+        <SideSection title="Contact">
+          {personalInfo.email && <SideItem icon="✉" text={personalInfo.email} />}
+          {personalInfo.phone && <SideItem icon="📱" text={personalInfo.phone} />}
+          {personalInfo.location && <SideItem icon="📍" text={personalInfo.location} />}
+          {personalInfo.linkedin && <SideItem icon="in" text={personalInfo.linkedin} />}
+          {personalInfo.github && <SideItem icon="⌨" text={personalInfo.github} />}
+          {personalInfo.website && <SideItem icon="🌐" text={personalInfo.website} />}
+        </SideSection>
 
-      {/* Summary */}
-      {(hasSummary || (!hasExp && !hasEdu)) && (
-        <MonoSection title="// 01. PROFILE_MANIFEST" isHighlighted={activeSection === 'summary'}>
-          <p
-            style={{
-              margin: 0,
-              color: hasSummary ? '#27272a' : '#a1a1aa',
-              fontSize: '12px',
-              lineHeight: '1.65',
-              fontStyle: hasSummary ? 'normal' : 'italic',
-            }}
-          >
-            {hasSummary
-              ? pi.summary
-              : 'Systems architect specializing in distributed consensus protocols, high-frequency transactional data streams, and kernel-level performance tuning. 8+ years designing zero-downtime distributed backends.'}
-          </p>
-        </MonoSection>
-      )}
-
-      {/* Work Experience */}
-      {(hasExp || !hasEdu) && (
-        <MonoSection title="// 02. WORK_HISTORY" isHighlighted={activeSection === 'experience'}>
-          {hasExp ? (
-            workExperience.map((exp) => (
-              <div key={exp.id} style={{ marginBottom: '22px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
-                  <div>
-                    <span style={{ fontWeight: '800', fontSize: '13px', color: '#09090b' }}>{exp.title || 'ROLE'}</span>
-                    <span style={{ color: '#52525b', marginLeft: '6px' }}>
-                      @ {exp.company || 'ORGANIZATION'}{exp.location ? ` [${exp.location}]` : ''}
-                    </span>
-                  </div>
-                  <span style={{ color: '#71717a', fontSize: '11px', whiteSpace: 'nowrap' }}>
-                    [{exp.startDate || '2021'} -&gt; {exp.current ? 'NOW' : exp.endDate || '2024'}]
-                  </span>
+        {/* Skills */}
+        {skills.some((g) => g.items.length > 0) && (
+          <SideSection title="Skills">
+            {skills.filter((g) => g.items.length > 0).map((group) => (
+              <div key={group.category} style={{ marginBottom: '10px' }}>
+                <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#94A3B8', marginBottom: '5px' }}>
+                  {group.category}
                 </div>
-                {exp.bullets.filter(Boolean).length > 0 && (
-                  <ul style={{ margin: '8px 0 0 20px', padding: 0, listStyleType: 'square' }}>
-                    {exp.bullets.filter(Boolean).map((bullet, i) => (
-                      <li key={i} style={{ marginBottom: '5px', color: '#27272a', fontSize: '12px', lineHeight: '1.6' }}>
-                        {bullet}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))
-          ) : (
-            <div style={{ color: '#a1a1aa', fontStyle: 'italic', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontWeight: '700' }}>PRINCIPAL DISTRIBUTED SYSTEMS ARCHITECT @ NEXUSTECH</span>
-                <span>[2021 -&gt; NOW]</span>
-              </div>
-              <ul style={{ margin: '6px 0 0 18px', padding: 0, listStyleType: 'square' }}>
-                <li>Rewrote global event mesh from Java to Rust, reducing p99 tail latency from 85ms to 3.2ms.</li>
-                <li>Orchestrated multi-region active-active failover with Raft consensus.</li>
-              </ul>
-            </div>
-          )}
-        </MonoSection>
-      )}
-
-      {/* Skills */}
-      {(hasSkills || (!hasExp && !hasEdu)) && (
-        <MonoSection title="// 03. TECH_STACK &amp; COMPETENCIES" isHighlighted={activeSection === 'skills'}>
-          {hasSkills ? (
-            skills.map((group, i) => (
-              <div key={i} style={{ marginBottom: '8px', display: 'flex', gap: '8px', alignItems: 'baseline' }}>
-                <span style={{ fontWeight: '700', color: '#18181b', minWidth: '150px', fontSize: '11.5px' }}>
-                  {group.category}::
-                </span>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {group.items.map((item, j) => (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  {group.items.map((item) => (
                     <span
-                      key={j}
+                      key={item}
                       style={{
-                        backgroundColor: '#f4f4f5',
-                        border: '1px solid #e4e4e7',
-                        padding: '1px 6px',
-                        borderRadius: '2px',
+                        background: 'rgba(255,255,255,0.1)',
+                        borderRadius: '4px',
+                        padding: '2px 8px',
                         fontSize: '11px',
-                        color: '#18181b',
+                        color: '#E2E8F0',
                       }}
                     >
                       {item}
@@ -174,83 +73,157 @@ export default function MinimalTemplate({ data, activeSection }: TemplateProps) 
                   ))}
                 </div>
               </div>
-            ))
-          ) : (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', color: '#a1a1aa' }}>
-              <span style={{ padding: '1px 6px', background: '#f4f4f5', border: '1px solid #e4e4e7' }}>Rust</span>
-              <span style={{ padding: '1px 6px', background: '#f4f4f5', border: '1px solid #e4e4e7' }}>Go</span>
-              <span style={{ padding: '1px 6px', background: '#f4f4f5', border: '1px solid #e4e4e7' }}>Kubernetes</span>
-              <span style={{ padding: '1px 6px', background: '#f4f4f5', border: '1px solid #e4e4e7' }}>PostgreSQL</span>
-              <span style={{ padding: '1px 6px', background: '#f4f4f5', border: '1px solid #e4e4e7' }}>eBPF</span>
-            </div>
-          )}
-        </MonoSection>
-      )}
+            ))}
+          </SideSection>
+        )}
 
-      {/* Education */}
-      {(hasEdu || !hasExp) && (
-        <MonoSection title="// 04. ACADEMIC_CREDENTIALS" isHighlighted={activeSection === 'education'}>
-          {hasEdu ? (
-            education.map((edu) => (
-              <div key={edu.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'baseline' }}>
-                <div>
-                  <span style={{ fontWeight: '700', fontSize: '12.5px', color: '#09090b' }}>{edu.degree || 'DEGREE'}</span>
-                  <span style={{ color: '#52525b', marginLeft: '6px' }}>
-                    :: {edu.school || 'INSTITUTION'}{edu.location ? ` [${edu.location}]` : ''}
-                  </span>
-                  {edu.gpa && <span style={{ color: '#71717a', marginLeft: '6px' }}> (GPA: {edu.gpa})</span>}
+        {/* Certifications */}
+        {certifications.length > 0 && (
+          <SideSection title="Certifications">
+            {certifications.map((cert) => (
+              <div key={cert.id} style={{ marginBottom: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: '#F1F5F9' }}>{cert.name}</div>
+                <div style={{ fontSize: '11px', color: '#94A3B8' }}>{cert.issuer}</div>
+                <div style={{ fontSize: '10px', color: '#64748B' }}>{formatDate(cert.date)}</div>
+              </div>
+            ))}
+          </SideSection>
+        )}
+      </div>
+
+      {/* Right Main Content */}
+      <div style={{ flex: 1, padding: '32px 28px', boxSizing: 'border-box' }}>
+        {/* Summary */}
+        {personalInfo.summary && (
+          <MainSection title="About Me" isHighlighted={activeSection === 'summary'}>
+            <p style={{ fontSize: '13px', lineHeight: '1.7', color: '#475569', margin: 0 }}>
+              {personalInfo.summary}
+            </p>
+          </MainSection>
+        )}
+
+        {/* Experience */}
+        {workExperience.length > 0 && (
+          <MainSection title="Experience" isHighlighted={activeSection === 'experience'}>
+            {workExperience.map((exp) => (
+              <div key={exp.id} style={{ marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#0F172A' }}>{exp.title}</div>
+                    <div style={{ fontSize: '13px', color: '#7C3AED', fontWeight: 600 }}>
+                      {exp.company}{exp.location ? ` — ${exp.location}` : ''}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#94A3B8', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    {formatDate(exp.startDate)}<br />
+                    {exp.current ? 'Present' : formatDate(exp.endDate)}
+                  </div>
                 </div>
-                <span style={{ color: '#71717a', fontSize: '11px' }}>[{edu.graduationDate || '2020'}]</span>
+                {exp.bullets.length > 0 && (
+                  <ul style={{ margin: '6px 0 0 0', paddingLeft: '16px' }}>
+                    {exp.bullets.map((bullet, i) => (
+                      <li key={i} style={{ fontSize: '12px', color: '#475569', lineHeight: '1.6', marginBottom: '3px' }}>
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            ))
-          ) : (
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#a1a1aa', fontStyle: 'italic' }}>
-              <div>B.S. COMPUTER ENGINEERING :: MIT [CAMBRIDGE, MA]</div>
-              <span>[2016 -&gt; 2020]</span>
-            </div>
-          )}
-        </MonoSection>
-      )}
+            ))}
+          </MainSection>
+        )}
 
-      {/* Projects */}
-      {hasProjects && (
-        <MonoSection title="// 05. REPOSITORIES &amp; OSS" isHighlighted={activeSection === 'additional'}>
-          {projects.map((proj) => (
-            <div key={proj.id} style={{ marginBottom: '14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontWeight: '700', fontSize: '12.5px', color: '#09090b' }}>&gt; {proj.name}</span>
-                {proj.url && <span style={{ color: '#71717a', fontSize: '11px' }}>{proj.url}</span>}
+        {/* Education */}
+        {education.length > 0 && (
+          <MainSection title="Education" isHighlighted={activeSection === 'education'}>
+            {education.map((edu) => (
+              <div key={edu.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '13px', color: '#0F172A' }}>{edu.degree}</div>
+                  <div style={{ fontSize: '12px', color: '#7C3AED' }}>
+                    {edu.school}{edu.location ? ` — ${edu.location}` : ''}
+                  </div>
+                  {edu.gpa && <div style={{ fontSize: '11px', color: '#94A3B8' }}>GPA: {edu.gpa}</div>}
+                </div>
+                <div style={{ fontSize: '11px', color: '#94A3B8', whiteSpace: 'nowrap' }}>
+                  {formatDate(edu.graduationDate)}
+                </div>
               </div>
-              {proj.technologies.length > 0 && (
-                <p style={{ color: '#71717a', margin: '2px 0', fontSize: '11px' }}>
-                  stack: {proj.technologies.join(', ')}
+            ))}
+          </MainSection>
+        )}
+
+        {/* Projects */}
+        {projects.length > 0 && (
+          <MainSection title="Projects" isHighlighted={activeSection === 'projects'}>
+            {projects.map((proj) => (
+              <div key={proj.id} style={{ marginBottom: '12px' }}>
+                <div style={{ fontWeight: 700, fontSize: '13px', color: '#0F172A' }}>
+                  {proj.name}
+                  {proj.url && <span style={{ fontWeight: 400, fontSize: '11px', color: '#7C3AED', marginLeft: '8px' }}>{proj.url}</span>}
+                </div>
+                <p style={{ fontSize: '12px', color: '#475569', margin: '3px 0', lineHeight: '1.6' }}>
+                  {proj.description}
                 </p>
-              )}
-              {proj.description && <p style={{ color: '#3f3f46', margin: '3px 0 0 0', fontSize: '12px' }}>{proj.description}</p>}
-            </div>
-          ))}
-        </MonoSection>
-      )}
-
-      {/* Certifications */}
-      {hasCerts && (
-        <MonoSection title="// 06. CERTIFICATIONS" isHighlighted={activeSection === 'additional'}>
-          {certifications.map((cert) => (
-            <div key={cert.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', alignItems: 'baseline' }}>
-              <span>
-                <span style={{ fontWeight: '700' }}>{cert.name}</span>
-                {cert.issuer && <span style={{ color: '#71717a' }}> :: {cert.issuer}</span>}
-              </span>
-              <span style={{ color: '#71717a', fontSize: '11px' }}>[{cert.date}]</span>
-            </div>
-          ))}
-        </MonoSection>
-      )}
+                {proj.technologies.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                    {proj.technologies.map((tech) => (
+                      <span
+                        key={tech}
+                        style={{
+                          background: '#F3F4F6',
+                          color: '#6B7280',
+                          borderRadius: '4px',
+                          padding: '1px 6px',
+                          fontSize: '11px',
+                        }}
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </MainSection>
+        )}
+      </div>
     </div>
   );
 }
 
-function MonoSection({
+function SideSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: '20px' }}>
+      <div
+        style={{
+          fontSize: '10px',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.12em',
+          color: '#7C3AED',
+          borderBottom: '1px solid rgba(124,58,237,0.4)',
+          paddingBottom: '4px',
+          marginBottom: '10px',
+        }}
+      >
+        {title}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function SideItem({ icon, text }: { icon: string; text: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', marginBottom: '5px' }}>
+      <span style={{ fontSize: '11px', flexShrink: 0, marginTop: '1px' }}>{icon}</span>
+      <span style={{ fontSize: '11px', color: '#CBD5E1', wordBreak: 'break-all' }}>{text}</span>
+    </div>
+  );
+}
+
+function MainSection({
   title,
   children,
   isHighlighted,
@@ -260,30 +233,21 @@ function MonoSection({
   isHighlighted?: boolean;
 }) {
   return (
-    <section
+    <div
       style={{
         marginBottom: '22px',
-        border: isHighlighted ? '1px solid #2F5D3A' : '1px solid transparent',
-        borderRadius: '4px',
-        padding: isHighlighted ? '8px 10px' : '0',
-        backgroundColor: isHighlighted ? 'rgba(47, 93, 58, 0.08)' : 'transparent',
-        transition: 'all 0.15s ease',
+        borderRadius: '6px',
+        padding: isHighlighted ? '8px' : '0',
+        backgroundColor: isHighlighted ? 'rgba(124, 58, 237, 0.05)' : 'transparent',
       }}
     >
-      <div
-        style={{
-          fontSize: '11.5px',
-          fontWeight: '800',
-          letterSpacing: '0.04em',
-          color: '#18181b',
-          borderBottom: '1px solid #18181b',
-          paddingBottom: '4px',
-          marginBottom: '10px',
-        }}
-      >
-        {title}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+        <h2 style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0F172A', margin: 0 }}>
+          {title}
+        </h2>
+        <div style={{ flex: 1, height: '1px', background: '#E2E8F0' }} />
       </div>
       {children}
-    </section>
+    </div>
   );
 }
