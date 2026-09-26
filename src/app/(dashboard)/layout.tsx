@@ -78,7 +78,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <polyline points="10 9 9 9 8 9" />
           </svg>
           <span className="text-lg font-bold tracking-tight" style={{ color: '#FDFCF9' }}>
-            Resume Now.
+            ATSResumeBuilder
           </span>
         </Link>
 
@@ -191,7 +191,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             ☰ Menu
           </button>
           <span className="font-bold text-[15px]" style={{ color: 'var(--ink)' }}>
-            Resume Now.
+            ATSResumeBuilder
           </span>
           <div className="w-6" />
         </div>

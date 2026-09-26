@@ -1,6 +1,6 @@
 # 📜 Project Journey & Complete Architecture Context
 
-> **Project:** Resume Now / ResuMind AI  
+> **Project:** Resume Now / ATSResumeBuilder  
 > **Repository:** [https://github.com/Ipsongurung1617/resumemaker](https://github.com/Ipsongurung1617/resumemaker)  
 > **Stack:** Next.js 14 (App Router) • TypeScript • Tailwind CSS • Prisma ORM • Supabase PostgreSQL • NextAuth.js • OpenRouter & NVIDIA AI • jsPDF / html2canvas  
 > **Design Philosophy:** Minimalist Editorial Design System (5-Token Strict Palette)
@@ -244,8 +244,8 @@ export interface ResumeData {
 
 | Variable | Description | Example / Recommended Value |
 | :--- | :--- | :--- |
-| `NEXTAUTH_URL` | Canonical app URL for redirects & callbacks | `http://localhost:3000` (Local) / `https://resumemaker-roan.vercel.app` (Vercel) |
-| `NEXTAUTH_SECRET` | Secret key for signing JWT cookies | `resumind-ai-secret-key-change-in-production-2024` |
+| `NEXTAUTH_URL` | Canonical app URL for redirects & callbacks | `http://localhost:3000` (Local) / `https://atsresumebuilder.vercel.app` (Vercel) |
+| `NEXTAUTH_SECRET` | Secret key for signing JWT cookies | `ATSResumeBuilder-ai-secret-key-change-in-production-2024` |
 | `DATABASE_URL` | Supabase transaction pooler connection | `postgresql://postgres.xxx:[PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true` |
 | `DIRECT_URL` | Supabase direct connection for migrations | `postgresql://postgres.xxx:[PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres` |
 | `OPENROUTER_API_KEY` | OpenRouter API Key for AI text generation | `sk-or-v1-your-openrouter-key` |

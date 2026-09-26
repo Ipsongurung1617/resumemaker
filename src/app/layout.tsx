@@ -7,38 +7,32 @@ import SessionWrapper from '@/components/providers/SessionWrapper';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'ResuMind AI — Free Resume Maker Online | AI Resume Builder',
+  title: 'ATSResumeBuilder — Free Resume Maker Online | AI Resume Builder',
   description:
-    'ResuMind AI is the best free resume maker online. Build ATS-friendly resumes with our AI resume builder in minutes. Try our online resume maker free — no credit card required.',
+    'ATSResumeBuilder is the best free resume maker online. Build ATS-friendly resumes with our AI resume builder in minutes. Try our online resume maker free — no credit card required.',
   keywords:
     'free resume maker online, online resume maker free, free resume, AI resume builder, resume maker online, free resume maker, resume builder free, ATS friendly resume, resume maker free online, free online resume maker, how to make resume for first job, resume format for freshers',
-  metadataBase: new URL('https://resumindai.com'),
+  metadataBase: new URL('https://atsresumebuilder.vercel.app'),
   alternates: {
-    canonical: 'https://resumindai.com',
+    canonical: 'https://atsresumebuilder.vercel.app',
+  },
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
   },
   openGraph: {
-    title: 'ResuMind AI — Free AI Resume Builder',
+    title: 'ATSResumeBuilder — Free AI Resume Builder',
     description:
       'Build ATS-optimized resumes in minutes with AI. Free resume maker online — no credit card required.',
-    url: 'https://resumindai.com',
-    siteName: 'ResuMind AI',
-    images: [
-      {
-        url: 'https://resumindai.com/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'ResuMind AI — Free Online Resume Maker',
-      },
-    ],
+    url: 'https://atsresumebuilder.vercel.app',
+    siteName: 'ATSResumeBuilder',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ResuMind AI — Free AI Resume Builder',
-    description:
-      'Build ATS-optimized resumes in minutes with AI. Free to start.',
-    images: ['https://resumindai.com/og-image.png'],
+    title: 'ATSResumeBuilder — Free AI Resume Builder',
+    description: 'Build ATS-optimized resumes in minutes with AI. Free to start.',
   },
   robots: {
     index: true,
@@ -56,37 +50,22 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'ResuMind AI',
-  url: 'https://resumindai.com',
-  description:
-    'AI-powered free resume maker online. Build ATS-friendly resumes in minutes.',
+  name: 'ATSResumeBuilder',
+  url: 'https://atsresumebuilder.vercel.app',
+  description: 'AI-powered free resume maker online. Build ATS-friendly resumes in minutes.',
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   offers: [
-    {
-      '@type': 'Offer',
-      name: 'Free Plan',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    {
-      '@type': 'Offer',
-      name: 'Pro Plan',
-      price: '9',
-      priceCurrency: 'USD',
-      billingDuration: 'P1M',
-    },
+    { '@type': 'Offer', name: 'Free Plan', price: '0', priceCurrency: 'USD' },
+    { '@type': 'Offer', name: 'Pro Plan', price: '9', priceCurrency: 'USD', billingDuration: 'P1M' },
   ],
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -101,15 +80,17 @@ export default function RootLayout({
               duration: 4000,
               style: {
                 borderRadius: '12px',
-                background: '#0F172A',
-                color: '#F8FAFC',
+                background: '#1A1A16',
+                color: '#FDFCF9',
                 fontWeight: 500,
+                fontSize: '14px',
+                boxShadow: '0 4px 16px rgba(26,26,22,0.18)',
               },
               success: {
-                iconTheme: { primary: '#2563EB', secondary: '#fff' },
+                iconTheme: { primary: '#2F5D3A', secondary: '#FDFCF9' },
               },
               error: {
-                iconTheme: { primary: '#EF4444', secondary: '#fff' },
+                iconTheme: { primary: '#C0392B', secondary: '#FDFCF9' },
               },
             }}
           />

@@ -1,4 +1,4 @@
-# ResuMind AI — AI-Powered Resume Builder
+# ATSResumeBuilder — AI-Powered Resume Builder
 
 > Build ATS-friendly, professional resumes in minutes with the power of AI. The best free resume maker online with AI suggestions, LinkedIn import, and one-click PDF export.
 
@@ -50,8 +50,8 @@
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/resumind-ai.git
-cd resumind-ai
+git clone https://github.com/your-username/ATSResumeBuilder-ai.git
+cd ATSResumeBuilder-ai
 ```
 
 ### 2. Install dependencies
@@ -199,7 +199,7 @@ curl -X POST http://localhost:3000/api/user/plan \
 1. Push your code to GitHub
 2. Import the repo on [vercel.com](https://vercel.com)
 3. Add all environment variables in Vercel dashboard:
-   - `NEXTAUTH_URL` → your production URL (e.g. `https://resumind.ai`)
+   - `NEXTAUTH_URL` → your production URL (e.g. `https://ATSResumeBuilder.ai`)
    - `NEXTAUTH_SECRET` → generate with `openssl rand -base64 32`
    - `OPENROUTER_API_KEY` → your OpenRouter key
    - `DATABASE_URL` → for production, switch to PostgreSQL (update `schema.prisma` provider)
@@ -241,4 +241,4 @@ free resume maker online · online resume maker free · AI resume builder · ATS
 
 ## 📄 License
 
-MIT © 2024 ResuMind AI
+MIT © 2024 ATSResumeBuilder

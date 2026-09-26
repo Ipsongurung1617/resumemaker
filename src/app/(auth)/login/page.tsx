@@ -63,7 +63,7 @@ export default function LoginPage() {
             <polyline points="10 9 9 9 8 9" />
           </svg>
           <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--ink)' }}>
-            Resume Now.
+            ATSResumeBuilder
           </span>
         </Link>
 
@@ -91,7 +91,7 @@ export default function LoginPage() {
               className="text-[28px] font-semibold tracking-[-0.01em] mb-1"
               style={{ color: 'var(--ink)' }}
             >
-              Sign in to Resume Now
+              Sign in to ATSResumeBuilder
             </h1>
             <p className="text-[14px]" style={{ color: 'var(--muted)' }}>
               Access your saved resumes and continue editing.

@@ -54,8 +54,8 @@ async function callAI(systemPrompt: string, userMessage: string): Promise<string
       headers: {
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://resumind.ai',
-        'X-Title': 'ResuMind AI Resume Builder',
+        'HTTP-Referer': 'https://ATSResumeBuilder.ai',
+        'X-Title': 'ATSResumeBuilder Resume Builder',
       },
       body: JSON.stringify({
         model: OPENROUTER_MODEL,

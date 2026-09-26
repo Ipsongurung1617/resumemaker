@@ -8,7 +8,7 @@ import PaymentModal from '@/components/ui/PaymentModal';
 
 const FAQ = [
   {
-    q: 'Is ResuMind AI really free to try?',
+    q: 'Is ATSResumeBuilder really free to try?',
     a: 'Yes! You can create up to 3 resumes with 2 templates and clean PDF export for free — no credit card required. Upgrade to Pro when you want AI bullet optimization and full career description structuring.',
   },
   {

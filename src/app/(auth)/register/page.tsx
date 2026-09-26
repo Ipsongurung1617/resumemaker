@@ -118,7 +118,7 @@ export default function RegisterPage() {
             <polyline points="10 9 9 9 8 9" />
           </svg>
           <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--ink)' }}>
-            Resume Now.
+            ATSResumeBuilder
           </span>
         </Link>
 

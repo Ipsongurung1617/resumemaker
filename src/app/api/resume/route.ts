@@ -4,14 +4,13 @@ import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import type { ResumeData, ResumeTemplate } from '@/types/resume';
 
-const FREE_PLAN_LIMIT = 3;
+const FREE_PLAN_LIMIT = 1;
+const PRO_PLAN_LIMIT = 10;
 
 // ── GET /api/resume ──────────────────────────────────────────────────────────
-// Returns all resumes owned by the authenticated user.
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -29,19 +28,14 @@ export async function GET() {
     return NextResponse.json({ success: true, data: parsed }, { status: 200 });
   } catch (error) {
     console.error('[RESUME GET]', error);
-    return NextResponse.json(
-      { success: false, message: 'Failed to fetch resumes' },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: 'Failed to fetch resumes' }, { status: 500 });
   }
 }
 
 // ── POST /api/resume ─────────────────────────────────────────────────────────
-// Creates a new resume for the authenticated user.
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -54,33 +48,28 @@ export async function POST(req: NextRequest) {
     };
 
     if (!title || typeof title !== 'string' || title.trim().length === 0) {
-      return NextResponse.json(
-        { error: 'Resume title is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Resume title is required' }, { status: 400 });
     }
 
     if (!data || typeof data !== 'object') {
-      return NextResponse.json(
-        { error: 'Resume data is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Resume data is required' }, { status: 400 });
     }
 
-    // Enforce free plan resume limit
-    if (session.user.plan === 'free') {
-      const count = await db.resume.count({
-        where: { userId: session.user.id },
-      });
-      if (count >= FREE_PLAN_LIMIT) {
-        return NextResponse.json(
-          {
-            error: `Free plan allows a maximum of ${FREE_PLAN_LIMIT} resumes. Upgrade to Pro for unlimited resumes.`,
-            limitReached: true,
-          },
-          { status: 403 },
-        );
-      }
+    // Enforce plan resume limits: free = 1, pro = 10
+    const isPro = session.user.plan === 'pro';
+    const limit = isPro ? PRO_PLAN_LIMIT : FREE_PLAN_LIMIT;
+    const count = await db.resume.count({ where: { userId: session.user.id } });
+
+    if (count >= limit) {
+      return NextResponse.json(
+        {
+          error: isPro
+            ? `Pro plan allows a maximum of ${PRO_PLAN_LIMIT} resumes.`
+            : `Free plan allows only ${FREE_PLAN_LIMIT} resume. Upgrade to Pro for up to ${PRO_PLAN_LIMIT} resumes.`,
+          limitReached: true,
+        },
+        { status: 403 },
+      );
     }
 
     const validTemplates: ResumeTemplate[] = ['modern', 'classic', 'minimal'];
@@ -96,15 +85,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(
-      { success: true, data: { ...resume, data } },
-      { status: 201 },
-    );
+    return NextResponse.json({ success: true, data: { ...resume, data } }, { status: 201 });
   } catch (error) {
     console.error('[RESUME POST]', error);
-    return NextResponse.json(
-      { success: false, message: 'Failed to create resume' },
-      { status: 500 },
-    );
+    return NextResponse.json({ success: false, message: 'Failed to create resume' }, { status: 500 });
   }
 }

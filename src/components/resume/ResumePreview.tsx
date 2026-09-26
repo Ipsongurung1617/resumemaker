@@ -13,6 +13,7 @@ interface ResumePreviewProps {
   hideProtection?: boolean;
   activeSection?: string;
   onDownloadClick?: () => void;
+  isPro?: boolean;
 }
 
 export default function ResumePreview({
@@ -23,6 +24,7 @@ export default function ResumePreview({
   hideProtection = false,
   activeSection,
   onDownloadClick,
+  isPro = false,
 }: ResumePreviewProps) {
   const TemplateComponent =
     template === 'classic' ? ClassicTemplate :
@@ -60,15 +62,55 @@ export default function ResumePreview({
             boxShadow: '0 1px 3px rgba(26, 26, 22, 0.08)',
           }}
         >
-          {/* Render Active Editorial Template */}
+          {/* Resume template content */}
           <TemplateComponent data={data} activeSection={activeSection} />
 
-          {/* Anti-Screenshot Bottom Shield: Bar in --ink, text in --paper, button in --accent */}
+          {/* ── FREE PLAN DIAGONAL WATERMARK ── */}
+          {/* Renders on top of resume content so screenshots are also watermarked */}
+          {!isPro && (
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                pointerEvents: 'none',
+                zIndex: 10,
+                overflow: 'hidden',
+              }}
+            >
+              {/* Diagonal repeating watermark grid */}
+              {Array.from({ length: 8 }).map((_, row) =>
+                Array.from({ length: 5 }).map((_, col) => (
+                  <div
+                    key={`${row}-${col}`}
+                    style={{
+                      position: 'absolute',
+                      top: `${row * 160 - 40}px`,
+                      left: `${col * 220 - 60}px`,
+                      transform: 'rotate(-35deg)',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      letterSpacing: '0.12em',
+                      color: 'rgba(47, 93, 58, 0.13)',
+                      whiteSpace: 'nowrap',
+                      userSelect: 'none',
+                      fontFamily: 'system-ui, sans-serif',
+                    }}
+                  >
+                    ATSRESUMEBUILDER.COM · FREE
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* ── BOTTOM SHIELD BAR ── */}
           {!hideProtection && (
             <div
               className="preview-protection-overlay protection-shield absolute bottom-0 left-0 right-0 h-40 flex flex-col items-center justify-end pb-8 px-6 text-center select-none"
               style={{
                 background: 'linear-gradient(to top, rgba(253,252,249,1) 0%, rgba(253,252,249,0.92) 50%, rgba(253,252,249,0) 100%)',
+                zIndex: 20,
               }}
             >
               <div
@@ -82,10 +124,12 @@ export default function ResumePreview({
               >
                 <div>
                   <div className="font-semibold text-xs" style={{ color: '#FDFCF9' }}>
-                    Draft Preview Active
+                    {isPro ? 'Pro Preview Active' : 'Free Plan Preview'}
                   </div>
                   <div className="text-[11px]" style={{ color: 'rgba(253, 252, 249, 0.55)' }}>
-                    Export to generate official unwatermarked PDF
+                    {isPro
+                      ? 'Export to generate clean PDF'
+                      : 'Upgrade to Pro to remove watermark & export PDF'}
                   </div>
                 </div>
 
@@ -99,7 +143,7 @@ export default function ResumePreview({
                       color: '#FDFCF9',
                     }}
                   >
-                    Export PDF
+                    {isPro ? 'Export PDF' : 'Upgrade →'}
                   </button>
                 )}
               </div>

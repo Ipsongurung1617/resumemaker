@@ -1495,7 +1495,7 @@ export default function ResumeEditorPage() {
       <PaymentModal
         open={paymentModalOpen}
         onClose={() => setPaymentModalOpen(false)}
-        title="Upgrade to ResuMind Pro"
+        title="Upgrade to ATSResumeBuilder Pro"
         subtitle={paymentReason || 'Unlock unrestricted, unwatermarked high-resolution PDF exports and AI writing tools.'}
         confirmLabel="Activate Pro & Continue"
         onSuccess={() => {

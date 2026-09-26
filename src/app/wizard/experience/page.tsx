@@ -97,7 +97,7 @@ export default function ResumeNowExperienceStep() {
                 <polyline points="10 9 9 9 8 9" />
               </svg>
               <span className="text-xl font-bold tracking-tight" style={{ color: '#FDFCF9' }}>
-                Resume Now.
+                ATSResumeBuilder
               </span>
             </div>
 

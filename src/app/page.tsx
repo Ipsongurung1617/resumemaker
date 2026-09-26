@@ -38,7 +38,7 @@ export default function LandingPage() {
               className="text-lg font-bold tracking-tight"
               style={{ color: 'var(--ink)' }}
             >
-              Resume Now.
+              ATSResumeBuilder
             </span>
           </Link>
 
@@ -488,7 +488,7 @@ export default function LandingPage() {
               <polyline points="14 2 14 8 20 8" />
             </svg>
             <span style={{ color: 'var(--muted)' }}>
-              © {new Date().getFullYear()} Resume Now. Minimal, ATS-optimized resume creation.
+              © {new Date().getFullYear()} ATSResumeBuilder Minimal, ATS-optimized resume creation.
             </span>
           </div>
 
