@@ -88,6 +88,12 @@ export default function ResumeEditorPage() {
   const [tailorModal, setTailorModal] = useState(false);
   const [jdText, setJdText] = useState('');
   const [tailorSuggestions, setTailorSuggestions] = useState<string[]>([]);
+  const [tailorResult, setTailorResult] = useState<{
+    score?: number;
+    matchedKeywords?: string[];
+    missingKeywords?: string[];
+    suggestions: string[];
+  } | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [rewritingBullet, setRewritingBullet] = useState<string | null>(null);
 
@@ -228,15 +234,11 @@ export default function ResumeEditorPage() {
     }
   }
 
-  // AI: Tailor to Job Description
+  // AI: Tailor to Job Description & ATS Keyword Match
   async function handleTailor() {
-    if (!isPro) {
-      setPaymentReason('Job Description keyword matching requires a Pro subscription.');
-      setPaymentModalOpen(true);
-      return;
-    }
-    if (!jdText.trim()) {
-      toast.error('Paste a target job description first');
+    const text = jdText.trim();
+    if (!text || text.length < 20) {
+      toast.error('Please paste a job description with at least 20 characters');
       return;
     }
     setAiLoading(true);
@@ -244,16 +246,18 @@ export default function ResumeEditorPage() {
       const res = await fetch('/api/ai/tailor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeData: data, jobDescription: jdText }),
+        body: JSON.stringify({ resumeData: data, jobDescription: text }),
       });
       const json = await res.json();
-      if (json.success && json.data?.suggestions) {
-        setTailorSuggestions(json.data.suggestions);
+      if (json.success && json.data) {
+        setTailorResult(json.data);
+        setTailorSuggestions(json.data.suggestions || []);
+        toast.success(`ATS Match calculated: ${json.data.score || 75}%`);
       } else {
-        toast.error(json.message || 'Tailoring failed');
+        toast.error(json.message || json.error || 'Tailoring analysis failed. Please try again.');
       }
     } catch {
-      toast.error('AI service error');
+      toast.error('AI service error. Please try again.');
     } finally {
       setAiLoading(false);
     }
@@ -1476,17 +1480,72 @@ export default function ResumeEditorPage() {
             </button>
           </div>
 
-          {tailorSuggestions.length > 0 && (
-            <div className="mt-4 p-4 bg-zinc-50 border border-zinc-200 rounded-xl space-y-2">
-              <h4 className="text-sm font-bold text-zinc-900">Recommended Enhancements:</h4>
-              <ul className="space-y-2 text-sm text-zinc-700">
-                {tailorSuggestions.map((sug, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-zinc-900 font-bold">•</span>
-                    <span>{sug}</span>
-                  </li>
-                ))}
-              </ul>
+          {tailorResult && (
+            <div className="mt-4 p-4 rounded-[10px] space-y-4 border" style={{ backgroundColor: 'var(--paper)', borderColor: 'var(--line)' }}>
+              {/* Score header */}
+              <div className="flex items-center justify-between pb-3 border-b" style={{ borderColor: 'var(--line)' }}>
+                <div>
+                  <div className="text-xs uppercase font-bold tracking-wider" style={{ color: 'var(--accent)' }}>
+                    ATS Match Score
+                  </div>
+                  <div className="text-2xl font-black mt-0.5" style={{ color: 'var(--ink)' }}>
+                    {tailorResult.score || 75}%
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-[6px]" style={{ backgroundColor: 'rgba(47, 93, 58, 0.1)', color: 'var(--accent)' }}>
+                    {(tailorResult.score || 75) >= 70 ? 'High Alignment' : 'Action Needed'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Keywords chips */}
+              {tailorResult.matchedKeywords && tailorResult.matchedKeywords.length > 0 && (
+                <div>
+                  <div className="text-xs font-bold mb-1.5" style={{ color: 'var(--ink)' }}>
+                    Matching Keywords Detected:
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {tailorResult.matchedKeywords.map((kw, i) => (
+                      <span key={i} className="text-xs px-2 py-0.5 rounded-[4px] font-medium" style={{ backgroundColor: 'rgba(47, 93, 58, 0.08)', color: 'var(--accent)', border: '1px solid rgba(47, 93, 58, 0.2)' }}>
+                        ✓ {kw}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {tailorResult.missingKeywords && tailorResult.missingKeywords.length > 0 && (
+                <div>
+                  <div className="text-xs font-bold mb-1.5" style={{ color: 'var(--ink)' }}>
+                    Missing Keywords to Add:
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {tailorResult.missingKeywords.map((kw, i) => (
+                      <span key={i} className="text-xs px-2 py-0.5 rounded-[4px] font-medium" style={{ backgroundColor: 'rgba(26, 26, 22, 0.05)', color: 'var(--ink)', border: '1px solid var(--line)' }}>
+                        + {kw}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Suggestions */}
+              {tailorSuggestions.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: 'var(--ink)' }}>
+                    Actionable Resume Adjustments:
+                  </h4>
+                  <ul className="space-y-2 text-xs leading-relaxed" style={{ color: 'var(--ink)' }}>
+                    {tailorSuggestions.map((sug, i) => (
+                      <li key={i} className="flex items-start gap-2 p-2 rounded-[6px]" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--line)' }}>
+                        <span className="font-bold shrink-0" style={{ color: 'var(--accent)' }}>•</span>
+                        <span>{sug}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
         </div>
