@@ -171,12 +171,23 @@ export async function fetchLinkedInProfile(input: string): Promise<string> {
     targetUrl = clean.startsWith('http') ? clean : `https://${clean}`;
   } else {
     // User provided username / handle
-    const handle = clean.replace(/^in\//, '').replace(/^https?:\/\//, '');
+    const handle = clean.replace(/^in\//, '').replace(/^https?:\/\//, '').replace(/[^a-zA-Z0-9_-]/g, '');
     targetUrl = `https://www.linkedin.com/in/${handle}`;
   }
 
   if (targetUrl.includes('linkedin.com/') && !targetUrl.includes('/in/') && !targetUrl.includes('/pub/')) {
     targetUrl = targetUrl.replace('linkedin.com/', 'linkedin.com/in/');
+  }
+
+  // SSRF Protection: Validate targetUrl is strictly HTTPS and hosted on linkedin.com
+  try {
+    const parsed = new URL(targetUrl);
+    const validHostnames = ['linkedin.com', 'www.linkedin.com'];
+    if (parsed.protocol !== 'https:' || !validHostnames.includes(parsed.hostname.toLowerCase())) {
+      throw new Error('Invalid LinkedIn URL domain.');
+    }
+  } catch {
+    throw new Error('Invalid LinkedIn profile URL. Only https://linkedin.com or https://www.linkedin.com is allowed.');
   }
 
   const res = await fetch(targetUrl, {

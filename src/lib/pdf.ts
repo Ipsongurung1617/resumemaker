@@ -1,5 +1,16 @@
 'use client';
 
+/**
+ * Purpose: Generates a high-fidelity, vector-scaled A4 PDF from a DOM element.
+ * Why: We clone the DOM element off-screen rather than capturing the on-screen preview
+ *      so that zoom scaling, interactive outlines, and preview-only watermark shields
+ *      can be cleanly stripped without affecting the user's active viewport.
+ *
+ * @param elementId - The DOM ID of the resume canvas container to render
+ * @param filename - The target filename for the downloaded PDF file
+ * @returns Promise<void>
+ * @throws Error if elementId cannot be found in the DOM or if canvas rendering fails
+ */
 export async function generatePDF(elementId: string, filename: string): Promise<void> {
   const html2canvas = (await import('html2canvas')).default;
   const jsPDF = (await import('jspdf')).default;
